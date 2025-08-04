@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 const Play = () => (
   <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16" ><path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288z"></path></svg>
@@ -14,12 +14,16 @@ export default function Player() {
   const [CurrentSong, setCurrentSong] = useState(null);
   const audioRef = useRef();
 
+  useEffect(() => {
+    // Load the audio file when the component mounts
+    audioRef.current.src = "/music/1/01.mp3";
+  }, []);
+
   const handleClick = () => {
     if (isPlaying) {
       audioRef.current.pause();
     }
     else {
-      audioRef.current.src = "/music/1/01.mp3"; // Example song path
       audioRef.current.play()
       audioRef.current.volume = 0.5; // Set initial volume
     }
