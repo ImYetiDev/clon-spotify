@@ -12,7 +12,7 @@ const Pause = () => (
 export default function Player() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [CurrentSong, setCurrentSong] = useState(null);
-  const audioRef = useRef;
+  const audioRef = useRef();
 
   const handleClick = () => {
     if (isPlaying) {
@@ -21,7 +21,7 @@ export default function Player() {
     else {
       audioRef.current.src = "/music/1/01.mp3"; // Example song path
       audioRef.current.play()
-      audioRef.current.volume = 0.4; // Set initial volume
+      audioRef.current.volume = 0.5; // Set initial volume
     }
 
     setIsPlaying(!isPlaying);
