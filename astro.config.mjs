@@ -7,6 +7,8 @@ import svelte from '@astrojs/svelte';
 
 import react from '@astrojs/react';
 
+import netlify from '@astrojs/netlify';
+
 // https://astro.build/config
 export default defineConfig({
   vite: {
@@ -14,5 +16,6 @@ export default defineConfig({
   },
 
   output: 'server',
-  integrations: [svelte(), react()]
+  integrations: [svelte(), react()],
+  adapter: netlify()
 });
