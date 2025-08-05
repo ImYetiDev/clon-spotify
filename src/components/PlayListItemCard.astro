@@ -1,5 +1,6 @@
 ---
 import type { Playlist } from "@/lib/data";
+import CardPlayButton from "@/components/CardPlayButton.jsx";
 
 interface Props {
   playlist: Playlist;
@@ -10,6 +11,11 @@ const { id, cover, artists, color, title } = playlist;
 
 const artistsString = artists.join(", ");
 ---
+<article class="group relative">
+
+  <div class="absolute right-4 bottom-20 translate-y-4 transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 z-10">
+    <CardPlayButton id={id} />
+  </div>
 
 <a
   href={`/playlist/${id}`}
@@ -41,3 +47,4 @@ const artistsString = artists.join(", ");
     </span>
   </div>
 </a>
+</article>
