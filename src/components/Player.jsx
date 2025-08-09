@@ -9,33 +9,53 @@ export const Pause = () => (
   <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7z"></path></svg>
 );
 
+const CurrentSong = ({ image, title }) => {
+  return (
+    <div
+      className='
+        flex items-center gap-5 relative overflow-hidden'>
+      <picture className='w-16 h-16 bg-zinc-500 rounded-md shadow-lg overflow-hidden'>
+        <img src={image} alt={title} />
+      </picture>
+
+      <h3 className='font-bold block'>
+        {title}
+      </h3>
+    </div>
+  );
+};
 
 export default function Player() {
-  const {  isPlaying, setIsPlaying } = usePlayerStore(state => state);
-  const [CurrentSong, setCurrentSong] = useState(null);
+  const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state);
   const audioRef = useRef();
 
   useEffect(() => {
-    // Load the audio file when the component mounts
-    audioRef.current.src = "/music/1/01.mp3";
-  }, []);
+    isPlaying
+      ? audioRef.current.play()
+      : audioRef.current.pause();
+  }, [isPlaying]);
+
+  useEffect(() => {
+    const { songs, song, playlist } = currentMusic;
+
+    if (song && playlist) {
+      const src = `/music/${playlist?.id}/0${song.id}.mp3`;
+      audioRef.current.src = src;
+      audioRef.current.load();
+    } else {
+    }
+  }, [currentMusic]);
+
 
   const handleClick = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    }
-    else {
-      audioRef.current.play()
-      audioRef.current.volume = 0.5; // Set initial volume
-    }
-
     setIsPlaying(!isPlaying);
+
   };
 
   return (
     <div className="flex flex-row justify-between w-full px-4 z-50">
       <div>
-        CurrentSong
+        <CurrentSong image={currentMusic?.song?.image} title={currentMusic?.song?.title} />
       </div>
 
       <div className="grid place-content-center gap-4 flex-1">

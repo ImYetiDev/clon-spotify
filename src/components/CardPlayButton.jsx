@@ -8,21 +8,29 @@ export default function CardPlayButton({ id }) {
     currentMusic,
     setCurrentMusic
   } = usePlayerStore(state => state);
-  const isPlayingPlaylist = isPlaying && currentMusic?.playlist.id === id;
+  const isPlayingPlaylist = isPlaying && currentMusic?.playlist?.id === id
+  const isThisPlaylistInStore = currentMusic?.playlist?.id === id
 
   const handlePlayPause = () => {
-  if (isPlayingPlaylist) {
+    if (isPlayingPlaylist) {
       setIsPlaying(false);
       return;
-  }
+    }
     fetch(`/api/get-info-playlist.json?id=${id}`)
       .then(res => res.json())
       .then(data => {
-        const { songs, playlist } = data;
-        setIsPlaying(true);
-        setCurrentMusic({ playlist, songs, song: songs[0] });
-
-        console.log("Current music set:", { playlist, songs, song: songs[0] });
+        // Asegúrate de que tienes datos en 'data' para evitar errores
+        if (data.playlist && data.songs && data.songs.length > 0) {
+          const { songs, playlist } = data;
+          setIsPlaying(true); // Ponemos el estado en reproducción
+          setCurrentMusic({ playlist, song: songs[0], songs }); // Establecemos la playlist y la canción actual
+          console.log('Playlist data set:', { playlist, song: songs[0], songs });
+        } else {
+          console.error("No songs found in the playlist");
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching playlist data:", error);
       });
   };
 
