@@ -9,7 +9,7 @@ export const Pause = () => (
   <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16"><path d="M2.7 1a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7zm8 0a.7.7 0 0 0-.7.7v12.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V1.7a.7.7 0 0 0-.7-.7z"></path></svg>
 );
 
-const CurrentSong = ({ image, title }) => {
+const CurrentSong = ({ image, title, artists }) => {
   return (
     <div
       className='
@@ -18,9 +18,14 @@ const CurrentSong = ({ image, title }) => {
         <img src={image} alt={title} />
       </picture>
 
-      <h3 className='font-bold block'>
-        {title}
-      </h3>
+      <div className='flex flex-col'>
+        <h3 className='font-semibold block text-sm'>
+          {title}
+        </h3>
+        <span className='text-xs opacity-80'>
+          {artists?.join(', ')}
+        </span>
+      </div>
     </div>
   );
 };
@@ -40,8 +45,9 @@ export default function Player() {
 
     if (song && playlist) {
       const src = `/music/${playlist?.id}/0${song.id}.mp3`;
+      console.log('Current song source:', src);
       audioRef.current.src = src;
-      audioRef.current.load();
+      audioRef.current.play();
     } else {
     }
   }, [currentMusic]);
@@ -55,7 +61,7 @@ export default function Player() {
   return (
     <div className="flex flex-row justify-between w-full px-4 z-50">
       <div>
-        <CurrentSong image={currentMusic?.song?.image} title={currentMusic?.song?.title} />
+        <CurrentSong {...currentMusic?.song} />
       </div>
 
       <div className="grid place-content-center gap-4 flex-1">
