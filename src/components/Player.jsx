@@ -34,6 +34,7 @@ const CurrentSong = ({ image, title, artists }) => {
 export default function Player() {
   const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state);
   const audioRef = useRef();
+  const volumeRef = useRef(1);
 
   useEffect(() => {
     isPlaying
@@ -48,6 +49,7 @@ export default function Player() {
       const src = `/music/${playlist?.id}/0${song.id}.mp3`;
       console.log('Current song source:', src);
       audioRef.current.src = src;
+      audioRef.current.volume = volumeRef.current;
       audioRef.current.play();
     } else {
     }
@@ -80,7 +82,9 @@ export default function Player() {
           defaultValue={100}
           onValueChange={(value) =>{
             const [newVolume] = value;
-            audioRef.current.volume = newVolume / 100;
+            const volumeValue = newVolume / 100;
+            volumeRef.current = volumeValue;
+            audioRef.current.volume = volumeValue;
           }}
         />
       </div>
