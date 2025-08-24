@@ -1,7 +1,7 @@
 import { usePlayerStore } from '@/store/playerStore';
 import { useState, useRef, useEffect } from 'react';
 import Slider from './Slider';
-import { VolumeSilenced , VolumeFull } from '@/icons/VolumeIcons';
+import { VolumeSilenced, VolumeFull } from '@/icons/VolumeIcons';
 
 export const Play = () => (
   <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16" ><path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288z"></path></svg>
@@ -35,21 +35,36 @@ const CurrentSong = ({ image, title, artists }) => {
 const VolumeControl = () => {
   const volume = usePlayerStore(state => state.volume);
   const setVolume = usePlayerStore(state => state.setVolume);
+  const previousVolumeRef = useRef(volume);
+
+  const isVolumeMuted = volume < 0.1;
+  const handleClickVolumen = () => {
+    if (isVolumeMuted) {
+      setVolume(previousVolumeRef.current)
+    } else {
+      previousVolumeRef.current = volume;
+      setVolume(0)
+    }
+
+  }
 
   return (
     <div className="flex justify-center gap-x-2 text-white">
-      {volume < 0.1 ? <VolumeSilenced /> : <VolumeFull />}
+      <button onClick={handleClickVolumen}>
+        {isVolumeMuted < 0.1 ? <VolumeFull /> : <VolumeSilenced />}
+      </button>
 
-      <Slider 
-          min={0}
-          max={100}
-          defaultValue={100}
-          onValueChange={(value) =>{
-            const [newVolume] = value;
-            const volumeValue = newVolume / 100;
-            setVolume(volumeValue);
-          }}
-        />
+      <Slider
+        min={0}
+        max={100}
+        value={volume * 100}
+        defaultValue={100}
+        onValueChange={(value) => {
+          const [newVolume] = value;
+          const volumeValue = newVolume / 100;
+          setVolume(volumeValue);
+        }}
+      />
     </div>
   );
 };
