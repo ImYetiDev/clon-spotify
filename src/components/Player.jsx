@@ -32,6 +32,51 @@ const CurrentSong = ({ image, title, artists }) => {
   );
 };
 
+const SongControl = ({ audio }) => {
+  const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    audio.current.addEventListener('timeupdate', handleTimeUpdate)
+
+    return () => {
+      audio.current.removeEventListener('timeupdate', handleTimeUpdate)
+    }
+  }, [])
+
+  const handleTimeUpdate = () => {
+    setCurrentTime(audio.current.currentTime); // devuelve en seg 145s => 02:25
+  }
+
+  const formatTime = time => {
+    if (time == null) return '00:00';
+
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  }
+
+  const duration = audio.current?.duration ?? 0;
+
+  return (
+    <div className='flex items-center gap-x-3 text-xs text-white w-full'>
+      <span className='opacity-80'>{formatTime(currentTime)}</span>
+
+      <Slider
+        className='w-[500px]'
+        min={0}
+        max={audio.current?.duration ?? 0}
+        value={[currentTime]}
+        defaultValue={[0]}
+        onValueChange={(value) => {
+          audio.current.currentTime = value;
+        }}
+      />
+
+      <span className='opacity-80'>{formatTime(duration)}</span>
+    </div>
+  );
+}
+
 const VolumeControl = () => {
   const volume = usePlayerStore(state => state.volume);
   const setVolume = usePlayerStore(state => state.setVolume);
@@ -50,7 +95,7 @@ const VolumeControl = () => {
 
   return (
     <div className="flex justify-center gap-x-2 text-white">
-      <button onClick={handleClickVolumen}>
+      <button className='opacity-70 hover:opacity-100 transition' onClick={handleClickVolumen}>
         {isVolumeMuted < 0.1 ? <VolumeFull /> : <VolumeSilenced />}
       </button>
 
@@ -110,10 +155,11 @@ export default function Player() {
       </div>
 
       <div className="grid place-content-center gap-4 flex-1">
-        <div className="flex justify-center">
+        <div className="flex justify-center flex-col items-center">
           <button className="bg-white rounded-full p-2 hover:cursor-pointer" onClick={handleClick}>
             {isPlaying ? <Pause /> : <Play />}
           </button>
+          <SongControl audio={audioRef} />
         </div>
       </div>
 
