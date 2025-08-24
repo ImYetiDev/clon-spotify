@@ -1,6 +1,7 @@
 import { usePlayerStore } from '@/store/playerStore';
 import { useState, useRef, useEffect } from 'react';
 import Slider from './Slider';
+import { VolumeSilenced , VolumeFull } from '@/icons/VolumeIcons';
 
 export const Play = () => (
   <svg role="img" height="16" width="16" aria-hidden="true" viewBox="0 0 16 16" ><path d="M3 1.713a.7.7 0 0 1 1.05-.607l10.89 6.288a.7.7 0 0 1 0 1.212L4.05 14.894A.7.7 0 0 1 3 14.288z"></path></svg>
@@ -31,8 +32,30 @@ const CurrentSong = ({ image, title, artists }) => {
   );
 };
 
+const VolumeControl = () => {
+  const volume = usePlayerStore(state => state.volume);
+  const setVolume = usePlayerStore(state => state.setVolume);
+
+  return (
+    <div className="flex justify-center gap-x-2 text-white">
+      {volume < 0.1 ? <VolumeSilenced /> : <VolumeFull />}
+
+      <Slider 
+          min={0}
+          max={100}
+          defaultValue={100}
+          onValueChange={(value) =>{
+            const [newVolume] = value;
+            const volumeValue = newVolume / 100;
+            setVolume(volumeValue);
+          }}
+        />
+    </div>
+  );
+};
+
 export default function Player() {
-  const { currentMusic, isPlaying, setIsPlaying } = usePlayerStore(state => state);
+  const { currentMusic, isPlaying, setIsPlaying, volume } = usePlayerStore(state => state);
   const audioRef = useRef();
   const volumeRef = useRef(1);
 
@@ -43,13 +66,17 @@ export default function Player() {
   }, [isPlaying]);
 
   useEffect(() => {
+    audioRef.current.volume = volume;
+  }, [volume]);
+
+  useEffect(() => {
     const { songs, song, playlist } = currentMusic;
 
     if (song && playlist) {
       const src = `/music/${playlist?.id}/0${song.id}.mp3`;
       console.log('Current song source:', src);
       audioRef.current.src = src;
-      audioRef.current.volume = volumeRef.current;
+      audioRef.current.volume = volume;
       audioRef.current.play();
     } else {
     }
@@ -76,17 +103,7 @@ export default function Player() {
       </div>
 
       <div className='grid place-content-center'>
-        <Slider 
-          min={0}
-          max={100}
-          defaultValue={100}
-          onValueChange={(value) =>{
-            const [newVolume] = value;
-            const volumeValue = newVolume / 100;
-            volumeRef.current = volumeValue;
-            audioRef.current.volume = volumeValue;
-          }}
-        />
+        <VolumeControl />
       </div>
 
       <audio ref={audioRef}></audio>
