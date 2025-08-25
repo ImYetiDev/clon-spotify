@@ -1,10 +1,13 @@
 ---
-import Layout from "../../layouts/Layout.astro"
-import { allPlaylists, songs } from "@/lib/data"
-const { id } = Astro.params
+import Layout from "../../layouts/Layout.astro";
+import { allPlaylists, songs } from "@/lib/data";
+import MusicsTable from "@/components/MusicsTable.astro";
+const { id } = Astro.params;
 
-const playlist = allPlaylists.find((playlist) => playlist.id === id)
-const playListSongs = songs.filter((song) => song.albumId === playlist?.albumId)
+const playlist = allPlaylists.find((playlist) => playlist.id === id);
+const playListSongs = songs.filter(
+  (song) => song.albumId === playlist?.albumId,
+);
 ---
 
 <Layout title="Spotify Clone">
@@ -31,7 +34,7 @@ const playListSongs = songs.filter((song) => song.albumId === playlist?.albumId)
         <div>
           <h1 class="text-5xl font-bold block text-white">
             <span transition:name=`playlist ${playlist?.id} title`>
-                {playlist?.title}
+              {playlist?.title}
             </span>
           </h1>
         </div>
@@ -50,9 +53,10 @@ const playListSongs = songs.filter((song) => song.albumId === playlist?.albumId)
       </div>
     </header>
 
-    
-
     <div class="relative z-10 px-6 pt-10"></div>
 
+    <div class="absolute inset-0 bg-gradient-to-t from-zinc-900 via-zinc-900/80 -z-[1]"></div>
+
+    <MusicsTable songs={playListSongs} />
   </div>
 </Layout>
